@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+
+  # ── vLLM backend (internal — no host port exposed) ───────────────────────
+  llm-backend:
+    image: dronavocab/llm_surya2:vllm
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: surya2-llm-backend
+    env_file: .env                          # MODEL_ID + HF_TOKEN from host .env
+    environment:
+      HUGGING_FACE_HUB_TOKEN: ${HF_TOKEN}  # vLLM reads this for gated models
+      HF_HOME: /root/.cache/huggingface
+    volumes:
+      - model_cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 600s
+
+  # ── Wrapper: public-facing proxy (Cythonized, port 9000) ─────────────────
+  surya-api:
+    image: dronavocab/llm_surya2:wrapper
+    build:
+      context: .
+      dockerfile: Dockerfile.wrapper
+    container_name: surya2-api
+    ports:
+      - "9000:9000"
+    environment:
+      INTERNAL_LLM_URL: http://llm-backend:7000/v1/chat/completions
+      INTERNAL_MODEL: ${MODEL_ID}
+      PUBLIC_MODEL_NAME: surya-02
+      BACKEND_IDENTITY: "Surya AI"
+      WRAPPER_PORT: "9000"
+      LOG_FILE: /app/logs/requests.log
+    volumes:
+      - wrapper_logs:/app/logs
+    depends_on:
+      llm-backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  model_cache:
+    driver: local
+  wrapper_logs:
+    driver: local

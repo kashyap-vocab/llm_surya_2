@@ -1,0 +1,150 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# IPython/Jupyter
+.ipynb_checkpoints
+*.ipynb
+
+# Notebook execution / outputs
+*.nbconvert.ipynb
+*.executed.ipynb
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+
+# VS Code
+.vscode/
+
+# JetBrains
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Large model/checkpoint files (TTS/ML)
+*.pth
+*.ckpt
+*.pt
+Models/
+**/Models/
+
+# Kaggle and workspace-specific
+/kaggle/
+/kaggle/working/
+/kaggle/input/
+
+# Data and outputs
+/data/
+/datasets/
+*/datasets/
+*.wav
+*.flac
+*.mp3
+*.npy
+*.npz
+
+# Runner / temporary scripts and logs
+kttss_run.log
+*.tmp
+
+# Local notebooks and backups
+*.bak
+
+# Ignore secrets and environment files
+.env
+.env.*
+
+# Allow exceptions (uncomment if you want to track some files)
+# !/kaggle/working/StyleTTS2/Configs/config_ft.yml

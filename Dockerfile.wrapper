@@ -1,0 +1,43 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Wrapper Image — 2-stage build
+# Stage 1: compile wrapper.py → .so with Cython (source deleted after)
+# Stage 2: lean runtime image, no source code, no build tools
+# Push: docker push kashyapsai2003/gemma_inhouse:wrapper
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Stage 1: Build ────────────────────────────────────────────────────────────
+FROM python:3.11-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gcc \
+        g++ \
+        python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+COPY requirements-wrapper.txt .
+RUN pip install --no-cache-dir -r requirements-wrapper.txt
+
+# Compile wrapper.py → wrapper.cpython-311-x86_64-linux-gnu.so
+COPY wrapper.py setup_wrapper.py ./
+RUN python setup_wrapper.py build_ext --inplace \
+    && rm -f wrapper.py wrapper.c setup_wrapper.py   # strip all source
+
+# ── Stage 2: Runtime ──────────────────────────────────────────────────────────
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN pip install --no-cache-dir \
+        fastapi==0.115.0 \
+        "uvicorn[standard]==0.30.0" \
+        httpx==0.27.0
+
+# Copy only the compiled binary and the thin launcher — no .py source
+COPY --from=builder /build/wrapper.cpython-311-*.so ./
+COPY wrapper_entrypoint.py .
+
+EXPOSE 9000
+
+CMD ["python3", "wrapper_entrypoint.py"]
