@@ -353,3 +353,4 @@ The model runs in **4-bit NF4 quantization** via bitsandbytes:
 - Compute dtype: float16
 
 This reduces the Gemma 2-9b-it memory footprint from ~18 GB (full precision) to ~6–7 GB, making it fit on a single T4 GPU.
+# Updated deployment wrapper
